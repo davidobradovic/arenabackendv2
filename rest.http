@@ -1,0 +1,4 @@
+GET http://localhost:3333/zapisnici/svi-izvjestaji/
+
+
+GET http://localhost:3333/zapisnici/izvjestaj/65c33d1a30b7620a0ddd44ac
