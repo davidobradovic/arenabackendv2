@@ -15,6 +15,8 @@ const voziloUpripremiRoute = require('./routes/ProcesiNaVoziluRoutes')
 const messagesRoute = require('./routes/MessagesRoutes')
 const Task = require("./models/TaskSchema")
 const { Expo } = require('expo-server-sdk');
+const vehicleOrderScheme = require("./routes/VehicleOrderRoutes")
+const orderedVehiclesRoutes = require("./routes/OrderedVehicleRoutes")
 const expo = new Expo();
 
 
@@ -71,7 +73,7 @@ async function checkAndSendRemindersDueDate() {
   const tasks = await Task.find({ $or: [{ dueDate: { $lte: currentTime } }, { dueDate: currentTime }] }).populate('users');
   tasks.forEach(async task => {
     if (task.dueDate.getTime() <= currentTime.getTime()) {
-      await sendNotificationDueDate(task.user.pushNotification, `Isteklo vam je vrijeme za izradu zadatka: ${task.title}`);
+      // await sendNotificationDueDate(task.user.pushNotification, `Isteklo vam je vrijeme za izradu zadatka: ${task.title}`);
       task.dueDate = null; // Set reminder to null to mark it as sent
       await task.save();
     }
@@ -100,6 +102,10 @@ app.use('/authentication/', authRoute)
 app.use('/administration/', adminRoute)
 app.use('/vozilo-u-pripremi/', voziloUpripremiRoute)
 app.use('/chats', messagesRoute)
+
+// novo
+app.use('/api/vehicle-orders/', vehicleOrderScheme)
+app.use('/api/ordered-vehicles', orderedVehiclesRoutes);
 
 
 

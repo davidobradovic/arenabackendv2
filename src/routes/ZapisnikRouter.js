@@ -24,12 +24,41 @@ const upload = multer({ storage: storage })
 
 router.get('/svi-izvjestaji', async (req, res) => {
     try {
-        const result = await Zapisnik.find();
-        res.send(result)
+        // Pagination params
+        const page = parseInt(req.query.page) || 1;
+        const perPage = parseInt(req.query.per_page) || 10;
+
+        // Total broj izvještaja
+        const total = await Zapisnik.countDocuments();
+
+        // Fetch sa paginacijom
+        const result = await Zapisnik.find()
+            .skip((page - 1) * perPage)
+            .sort({ createdAt: -1 }) 
+            .limit(perPage)
+            .sort({ createdAt: -1 }) // najnoviji prvi (ako postoji createdAt polje)
+            .lean();
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({ error: 'Nema izvještaja' });
+        }
+
+        res.status(200).json({
+            data: result,
+            meta: {
+                total,
+                page,
+                per_page: perPage,
+                last_page: Math.ceil(total / perPage)
+            }
+        });
+
     } catch (e) {
-        return res.status(500).json({ error: 'Greska pri izvlacenju podataka' + e })
+        console.error("Greška pri izvlacenju podataka:", e);
+        return res.status(500).json({ error: 'Greška pri izvlacenju podataka' });
     }
-})
+});
+
 
 
 router.get('/izvjestaj/:izvjestajId', async (req, res) => {

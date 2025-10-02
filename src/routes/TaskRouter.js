@@ -35,19 +35,41 @@ const upload = multer({ storage: storage });
 
 router.get('/svi-zadaci', async (req, res) => {
     try {
+        // Pagination params
+        const page = parseInt(req.query.page) || 1;
+        const perPage = parseInt(req.query.per_page) || 40;
 
-        const user = await Task.find().populate('files');
+        // Count total tasks
+        const total = await Task.countDocuments();
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+        // Fetch tasks with pagination
+        const tasks = await Task.find()
+            .populate('files')
+            .sort({ createdAt: -1 }) 
+            .skip((page - 1) * perPage)
+            .limit(perPage)
+            .lean();
+
+        if (!tasks || tasks.length === 0) {
+            return res.status(404).json({ error: 'No tasks found' });
         }
 
-        res.status(201).json(user);
+        res.status(200).json({
+            data: tasks,
+            meta: {
+                total,
+                page,
+                per_page: perPage,
+                last_page: Math.ceil(total / perPage)
+            }
+        });
+
     } catch (error) {
-        console.error('Error creating task:', error);
+        console.error('Error fetching tasks:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 router.get('/zadatak/:zadId', async (req, res) => {
     try {
