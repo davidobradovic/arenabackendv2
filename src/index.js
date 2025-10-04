@@ -13,6 +13,7 @@ const authRoute = require('./routes/AuthenticationRouter')
 const adminRoute = require('./routes/AdministratorRoutes')
 const voziloUpripremiRoute = require('./routes/ProcesiNaVoziluRoutes')
 const messagesRoute = require('./routes/MessagesRoutes')
+const salesRoute = require('./routes/SalesRoutes')
 const Task = require("./models/TaskSchema")
 const { Expo } = require('expo-server-sdk');
 const vehicleOrderScheme = require("./routes/VehicleOrderRoutes")
@@ -102,6 +103,7 @@ app.use('/authentication/', authRoute)
 app.use('/administration/', adminRoute)
 app.use('/vozilo-u-pripremi/', voziloUpripremiRoute)
 app.use('/chats', messagesRoute)
+app.use('/api/sales', salesRoute)
 
 // novo
 app.use('/api/vehicle-orders/', vehicleOrderScheme)

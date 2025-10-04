@@ -353,7 +353,11 @@ const procjenaSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-    }
+    },
+    description: {
+        type: String,
+        required: false,
+    },
 })
 
 module.exports = mongoose.model("ProcjenaVozla", procjenaSchema)
